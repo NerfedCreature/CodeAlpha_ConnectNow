@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Discover from './pages/Discover';
 import Messages from './pages/Messages';
+import Notifications from './pages/Notifications';
+import PostPage from './pages/PostPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import api from './api';
@@ -18,6 +20,16 @@ const socket = io('http://localhost:5000');
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [unreadCounts, setUnreadCounts] = useState({ notifications: 0, messages: 0 });
+
+  const fetchUnreadCounts = async () => {
+    try {
+      const res = await api.get('/notifications/unread');
+      setUnreadCounts(res.data);
+    } catch (err) {
+      console.error('Failed to fetch unread counts', err);
+    }
+  };
 
   useEffect(() => {
     const initUser = async () => {
@@ -26,7 +38,7 @@ function App() {
         try {
           const res = await api.get('/users/me');
           setCurrentUser(res.data);
-          socket.emit('join_user_room', res.data.id);
+          fetchUnreadCounts();
         } catch (err) {
           console.error("Failed to authenticate token", err);
           localStorage.removeItem('connectnow_token');
@@ -37,10 +49,44 @@ function App() {
     initUser();
   }, []);
 
+  useEffect(() => {
+    if (currentUser) {
+      socket.emit('join_user_room', currentUser.id);
+      fetchUnreadCounts(); // Fetch counts whenever user logs in
+      
+      const handleConnect = () => {
+        socket.emit('join_user_room', currentUser.id);
+      };
+      
+      socket.on('connect', handleConnect);
+      return () => {
+        socket.off('connect', handleConnect);
+      };
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    const handleReceiveMessage = () => {
+      setUnreadCounts(prev => ({ ...prev, messages: prev.messages + 1 }));
+    };
+    
+    const handleReceiveNotification = () => {
+      setUnreadCounts(prev => ({ ...prev, notifications: prev.notifications + 1 }));
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+    socket.on('receive_notification', handleReceiveNotification);
+
+    return () => {
+      socket.off('receive_message', handleReceiveMessage);
+      socket.off('receive_notification', handleReceiveNotification);
+    };
+  }, []);
+
   if (loading) return <div className="app-container container" style={{textAlign: 'center'}}>Loading...</div>;
 
   return (
-    <UserContext.Provider value={{ currentUser, setCurrentUser }}>
+    <UserContext.Provider value={{ currentUser, setCurrentUser, unreadCounts, setUnreadCounts }}>
       <SocketContext.Provider value={socket}>
         <Router>
           <Navbar />
@@ -50,8 +96,10 @@ function App() {
               <Route path="/register" element={currentUser ? <Navigate to="/" /> : <Register />} />
               <Route path="/" element={currentUser ? <Home /> : <Navigate to="/login" />} />
               <Route path="/discover" element={currentUser ? <Discover /> : <Navigate to="/login" />} />
+              <Route path="/post/:id" element={currentUser ? <PostPage /> : <Navigate to="/login" />} />
               <Route path="/messages" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
               <Route path="/messages/:username" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
+              <Route path="/notifications" element={currentUser ? <Notifications /> : <Navigate to="/login" />} />
               <Route path="/profile/:username" element={currentUser ? <Profile /> : <Navigate to="/login" />} />
             </Routes>
           </div>

@@ -47,9 +47,35 @@
   width: 32px;
   height: 32px;
   border: 2px solid var(--primary-light);
+  flex: 1;
 }
 
-@media (max-width: 600px) {
+.icon-only {
+  justify-content: center;
+  padding: 8px !important;
+}
+
+.badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: #f02849; /* Bright red matching the image */
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  border: 2px solid white; /* Adds the cutout effect */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transform: translate(25%, -25%); /* Perfect top-right overlap */
+}
+
+@media (max-width: 768px) {
   .nav-text {
     display: none;
   }

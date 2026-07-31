@@ -8,7 +8,7 @@ import './Messages.css';
 function Messages() {
   const { username } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, setUnreadCounts } = useContext(UserContext);
   const socket = useContext(SocketContext);
   
   const [inbox, setInbox] = useState([]);
@@ -74,10 +74,17 @@ function Messages() {
     try {
       // First verify the target user exists
       const userRes = await api.get(`/users/${username}`);
-      setChatUser(userRes.data);
+      const targetUser = userRes.data;
+      setChatUser(targetUser);
 
       const msgRes = await api.get(`/messages/${username}`);
       setMessages(msgRes.data);
+
+      // Mark messages as read
+      await api.put(`/messages/read/${targetUser.id}`);
+      
+      // Update global unread counts context (optimistic update)
+      setUnreadCounts(prev => ({ ...prev, messages: 0 })); // Simplified: clears all message badge count for demo
     } catch (err) {
       console.error('Failed to fetch chat history:', err);
       // If user not found, go back to inbox

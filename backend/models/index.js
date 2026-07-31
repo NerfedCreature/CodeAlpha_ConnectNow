@@ -12,6 +12,8 @@ const Post = require('./Post')(sequelize, DataTypes);
 const Comment = require('./Comment')(sequelize, DataTypes);
 const Follower = require('./Follower')(sequelize, DataTypes);
 const Message = require('./Message')(sequelize, DataTypes);
+const Notification = require('./Notification')(sequelize, DataTypes);
+const Like = require('./Like')(sequelize, DataTypes);
 
 // Relationships
 
@@ -37,11 +39,23 @@ User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
 Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
 Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 
+// User - Notification
+User.hasMany(Notification, { foreignKey: 'userId', as: 'notifications' });
+Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Notification.belongsTo(User, { foreignKey: 'sourceUserId', as: 'sourceUser' });
+Notification.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
+
+// User - Post (Likes, Many-to-Many through Like)
+User.belongsToMany(Post, { through: Like, as: 'likedPosts', foreignKey: 'userId' });
+Post.belongsToMany(User, { through: Like, as: 'likedBy', foreignKey: 'postId' });
+
 module.exports = {
   sequelize,
   User,
   Post,
   Comment,
   Follower,
-  Message
+  Message,
+  Notification,
+  Like
 };
