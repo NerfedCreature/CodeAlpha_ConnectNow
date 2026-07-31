@@ -29,12 +29,14 @@ const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const followRoutes = require('./routes/follows');
 const messageRoutes = require('./routes/messages');
+const notificationRoutes = require('./routes/notifications');
 
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/follows', followRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 app.get('/', (req, res) => {
   res.send('ConnectNow API is running');
@@ -60,8 +62,8 @@ server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
-    console.log('Database synced');
+    await sequelize.sync();
+    console.log('Database synced successfully without altering');
   } catch (err) {
     console.error('Unable to connect to the database:', err);
   }

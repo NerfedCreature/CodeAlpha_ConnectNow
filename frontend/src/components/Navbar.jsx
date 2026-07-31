@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
-import { Home, LogOut, Users, MessageSquare } from 'lucide-react';
+import { Home, LogOut, Users, MessageSquare, Bell } from 'lucide-react';
 import './Navbar.css';
 
 function Navbar() {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { currentUser, setCurrentUser, unreadCounts } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -30,10 +30,20 @@ function Navbar() {
             <span className="nav-text">Discover</span>
           </Link>
           {currentUser && (
-            <Link to="/messages" className="nav-link">
-              <MessageSquare size={20} />
-              <span className="nav-text">Messages</span>
-            </Link>
+            <>
+              <Link to="/messages" className="nav-link icon-only" style={{ position: 'relative' }}>
+                <MessageSquare size={24} />
+                {unreadCounts?.messages > 0 && (
+                  <span className="badge">{unreadCounts.messages}</span>
+                )}
+              </Link>
+              <Link to="/notifications" className="nav-link icon-only" style={{ position: 'relative' }}>
+                <Bell size={24} />
+                {unreadCounts?.notifications > 0 && (
+                  <span className="badge">{unreadCounts.notifications}</span>
+                )}
+              </Link>
+            </>
           )}
           {currentUser && (
             <>

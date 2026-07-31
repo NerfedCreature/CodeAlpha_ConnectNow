@@ -9,15 +9,20 @@ import './PostCard.css';
 function PostCard({ post }) {
   const { currentUser } = useContext(UserContext);
   const [likes, setLikes] = useState(post.likesCount);
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(post.likedBy?.some(u => u.id === currentUser?.id) || false);
   const [showComments, setShowComments] = useState(false);
 
   const handleLike = async () => {
-    if (liked) return; // Prevent multiple likes for demo simplicity
+    if (!currentUser) return;
     try {
-      await api.post(`/posts/${post.id}/like`);
-      setLikes(likes + 1);
-      setLiked(true);
+      const res = await api.post(`/posts/${post.id}/like`);
+      if (res.data.action === 'liked') {
+        setLikes(likes + 1);
+        setLiked(true);
+      } else {
+        setLikes(Math.max(0, likes - 1));
+        setLiked(false);
+      }
     } catch (err) {
       console.error('Failed to like post', err);
     }

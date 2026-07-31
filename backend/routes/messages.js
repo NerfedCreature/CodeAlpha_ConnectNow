@@ -102,4 +102,21 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// Mark messages from a specific sender as read
+router.put('/read/:senderId', auth, async (req, res) => {
+  try {
+    const receiverId = req.user.id;
+    const senderId = req.params.senderId;
+
+    await Message.update(
+      { isRead: true },
+      { where: { receiverId, senderId, isRead: false } }
+    );
+    
+    res.json({ message: 'Messages marked as read' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
