@@ -14,15 +14,22 @@ function Discover() {
 
   const fetchUsers = async () => {
     try {
+      console.log('Fetching users from /users API...');
       const res = await api.get('/users');
+      console.log('Fetched users data:', res.data);
       // Filter out the current user
       if (currentUser) {
-        setUsers(res.data.filter(u => u.id !== currentUser.id));
+        const filtered = res.data.filter(u => u.id !== currentUser.id);
+        console.log('Filtered users (excluding current user):', filtered);
+        setUsers(filtered);
       } else {
         setUsers(res.data);
       }
     } catch (err) {
-      console.error('Failed to fetch users', err);
+      console.error('Failed to fetch users:', err);
+      if (err.response) {
+        console.error('Error response:', err.response.data);
+      }
     } finally {
       setLoading(false);
     }
@@ -70,7 +77,9 @@ function Discover() {
       }}>
         {users.length > 0 ? (
           users.map(user => {
-            const isFollowing = user.followers?.some(f => f.id === currentUser?.id);
+            const isFollowing = Array.isArray(user.followers) 
+              ? user.followers.some(f => f.id === currentUser?.id)
+              : false;
             return (
               <div key={user.id} className="glass animate-fade-in" style={{ padding: '20px', textAlign: 'center' }}>
                 <Link to={`/profile/${user.username}`}>
