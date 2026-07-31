@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../api';
-import { UserContext } from '../App';
+import { UserContext, SocketContext } from '../App';
 import { Send, ArrowLeft } from 'lucide-react';
 import './Messages.css';
 
@@ -9,6 +9,7 @@ function Messages() {
   const { username } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useContext(UserContext);
+  const socket = useContext(SocketContext);
   
   const [inbox, setInbox] = useState([]);
   const [chatUser, setChatUser] = useState(null);
@@ -33,6 +34,28 @@ function Messages() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (!socket) return;
+    
+    const handleReceiveMessage = (newMessage) => {
+      // If we are currently chatting with the sender, append the message
+      if (chatUser && newMessage.senderId === chatUser.id) {
+        setMessages(prev => [...prev, newMessage]);
+      }
+      
+      // Update inbox preview if we are on the inbox view
+      if (!username) {
+        fetchInbox();
+      }
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+
+    return () => {
+      socket.off('receive_message', handleReceiveMessage);
+    };
+  }, [socket, chatUser, username]);
 
   const fetchInbox = async () => {
     setLoading(true);

@@ -91,6 +91,11 @@ router.post('/', auth, async (req, res) => {
       ]
     });
 
+    // Broadcast the message to the receiver's room via Socket.io
+    if (req.io) {
+      req.io.to(`user_${receiverId}`).emit('receive_message', messageWithSender);
+    }
+
     res.status(201).json(messageWithSender);
   } catch (err) {
     res.status(500).json({ error: err.message });

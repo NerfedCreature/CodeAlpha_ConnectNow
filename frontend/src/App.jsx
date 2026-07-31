@@ -8,8 +8,12 @@ import Messages from './pages/Messages';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import api from './api';
+import { io } from 'socket.io-client';
 
 export const UserContext = createContext();
+export const SocketContext = createContext();
+
+const socket = io('http://localhost:5000');
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -22,6 +26,7 @@ function App() {
         try {
           const res = await api.get('/users/me');
           setCurrentUser(res.data);
+          socket.emit('join_user_room', res.data.id);
         } catch (err) {
           console.error("Failed to authenticate token", err);
           localStorage.removeItem('connectnow_token');
@@ -36,20 +41,22 @@ function App() {
 
   return (
     <UserContext.Provider value={{ currentUser, setCurrentUser }}>
-      <Router>
-        <Navbar />
-        <div className="app-container container">
-          <Routes>
-            <Route path="/login" element={currentUser ? <Navigate to="/" /> : <Login />} />
-            <Route path="/register" element={currentUser ? <Navigate to="/" /> : <Register />} />
-            <Route path="/" element={currentUser ? <Home /> : <Navigate to="/login" />} />
-            <Route path="/discover" element={currentUser ? <Discover /> : <Navigate to="/login" />} />
-            <Route path="/messages" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
-            <Route path="/messages/:username" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
-            <Route path="/profile/:username" element={currentUser ? <Profile /> : <Navigate to="/login" />} />
-          </Routes>
-        </div>
-      </Router>
+      <SocketContext.Provider value={socket}>
+        <Router>
+          <Navbar />
+          <div className="app-container container">
+            <Routes>
+              <Route path="/login" element={currentUser ? <Navigate to="/" /> : <Login />} />
+              <Route path="/register" element={currentUser ? <Navigate to="/" /> : <Register />} />
+              <Route path="/" element={currentUser ? <Home /> : <Navigate to="/login" />} />
+              <Route path="/discover" element={currentUser ? <Discover /> : <Navigate to="/login" />} />
+              <Route path="/messages" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
+              <Route path="/messages/:username" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
+              <Route path="/profile/:username" element={currentUser ? <Profile /> : <Navigate to="/login" />} />
+            </Routes>
+          </div>
+        </Router>
+      </SocketContext.Provider>
     </UserContext.Provider>
   );
 }
