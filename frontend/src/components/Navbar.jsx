@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
-import { Home, LogOut, Users } from 'lucide-react';
+import { Home, LogOut, Users, MessageSquare } from 'lucide-react';
 import './Navbar.css';
 
 function Navbar() {
@@ -29,6 +29,12 @@ function Navbar() {
             <Users size={20} />
             <span className="nav-text">Discover</span>
           </Link>
+          {currentUser && (
+            <Link to="/messages" className="nav-link">
+              <MessageSquare size={20} />
+              <span className="nav-text">Messages</span>
+            </Link>
+          )}
           {currentUser && (
             <>
               <Link to={`/profile/${currentUser.username}`} className="nav-link profile-link">

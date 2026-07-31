@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Discover from './pages/Discover';
+import Messages from './pages/Messages';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import api from './api';
@@ -43,6 +44,8 @@ function App() {
             <Route path="/register" element={currentUser ? <Navigate to="/" /> : <Register />} />
             <Route path="/" element={currentUser ? <Home /> : <Navigate to="/login" />} />
             <Route path="/discover" element={currentUser ? <Discover /> : <Navigate to="/login" />} />
+            <Route path="/messages" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
+            <Route path="/messages/:username" element={currentUser ? <Messages /> : <Navigate to="/login" />} />
             <Route path="/profile/:username" element={currentUser ? <Profile /> : <Navigate to="/login" />} />
           </Routes>
         </div>
