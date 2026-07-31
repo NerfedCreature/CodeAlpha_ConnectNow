@@ -81,20 +81,27 @@ function Discover() {
               ? user.followers.some(f => f.id === currentUser?.id)
               : false;
             return (
-              <div key={user.id} className="glass animate-fade-in" style={{ padding: '20px', textAlign: 'center' }}>
-                <Link to={`/profile/${user.username}`}>
+              <div key={user.id} className="glass animate-fade-in" style={{ padding: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+                <Link to={`/profile/${user.username}`} style={{ flex: 1 }}>
                   <img src={user.avatarUrl} alt={user.name} className="avatar avatar-lg" style={{ marginBottom: '12px' }} />
                   <h3 style={{ fontSize: '1.1rem', color: 'var(--text-color)', marginBottom: '4px' }}>{user.name}</h3>
                   <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '16px' }}>@{user.username}</p>
                 </Link>
                 {currentUser && (
-                  <button 
-                    className={`btn ${isFollowing ? 'btn-outline' : 'btn-primary'}`} 
-                    style={{ width: '100%' }}
-                    onClick={() => handleFollowToggle(user)}
-                  >
-                    {isFollowing ? 'Following' : 'Follow'}
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                    <button 
+                      className={`btn ${isFollowing ? 'btn-outline' : 'btn-primary'}`} 
+                      style={{ flex: 1 }}
+                      onClick={() => handleFollowToggle(user)}
+                    >
+                      {isFollowing ? 'Following' : 'Follow'}
+                    </button>
+                    {isFollowing && (
+                      <Link to={`/messages/${user.username}`} className="btn btn-outline" style={{ flex: 1 }}>
+                        Message
+                      </Link>
+                    )}
+                  </div>
                 )}
               </div>
             );

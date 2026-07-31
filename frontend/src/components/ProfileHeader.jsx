@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { UserContext } from '../App';
+import { Link } from 'react-router-dom';
 import api from '../api';
 import './ProfileHeader.css';
 
@@ -45,14 +47,21 @@ function ProfileHeader({ profileUser, currentUser, onTabChange }) {
           </div>
         </div>
         
-        {!isOwnProfile && currentUser && (
+      {currentUser && !isOwnProfile && (
+        <div className="profile-actions" style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '24px' }}>
           <button 
             className={`btn ${isFollowing ? 'btn-outline' : 'btn-primary'}`}
             onClick={handleFollowToggle}
           >
             {isFollowing ? 'Following' : 'Follow'}
           </button>
-        )}
+          {isFollowing && (
+            <Link to={`/messages/${profileUser.username}`} className="btn btn-primary">
+              Message
+            </Link>
+          )}
+        </div>
+      )}
       </div>
       
       {profileUser.bio && (
