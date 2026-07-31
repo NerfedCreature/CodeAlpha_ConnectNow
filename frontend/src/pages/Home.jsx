@@ -8,14 +8,17 @@ function Home() {
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [feedType, setFeedType] = useState('following'); // 'global' or 'following'
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [feedType]);
 
   const fetchPosts = async () => {
+    setLoading(true);
     try {
-      const res = await api.get('/posts');
+      const endpoint = feedType === 'global' ? '/posts' : '/posts/feed';
+      const res = await api.get(endpoint);
       setPosts(res.data);
     } catch (err) {
       console.error('Failed to fetch posts', err);
@@ -29,9 +32,9 @@ function Home() {
     if (!newPostContent.trim() || !currentUser) return;
     try {
       const res = await api.post('/posts', {
-        content: newPostContent,
-        authorId: currentUser.id
+        content: newPostContent
       });
+      // Prepend the new post
       setPosts([res.data, ...posts]);
       setNewPostContent('');
     } catch (err) {
@@ -61,6 +64,23 @@ function Home() {
         </div>
       )}
 
+      {currentUser && (
+        <div className="feed-tabs" style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
+          <button 
+            className={`btn ${feedType === 'following' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setFeedType('following')}
+          >
+            Following
+          </button>
+          <button 
+            className={`btn ${feedType === 'global' ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setFeedType('global')}
+          >
+            Global
+          </button>
+        </div>
+      )}
+
       <div className="feed">
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>Loading feed...</div>
@@ -68,7 +88,9 @@ function Home() {
           posts.map(post => <PostCard key={post.id} post={post} />)
         ) : (
           <div className="glass" style={{ textAlign: 'center', padding: '40px' }}>
-            No posts yet. Be the first to say something!
+            {feedType === 'following' 
+              ? "You aren't following anyone with posts yet. Go Discover some people!" 
+              : "No posts yet. Be the first to say something!"}
           </div>
         )}
       </div>

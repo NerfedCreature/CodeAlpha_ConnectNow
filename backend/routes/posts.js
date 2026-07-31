@@ -23,6 +23,34 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get following posts (Following Feed)
+router.get('/feed', auth, async (req, res) => {
+  try {
+    const { Follower } = require('../models');
+    const following = await Follower.findAll({ where: { followerId: req.user.id } });
+    const followingIds = following.map(f => f.followingId);
+    
+    // Include user's own posts as well
+    followingIds.push(req.user.id);
+
+    const posts = await Post.findAll({
+      where: { authorId: followingIds },
+      include: [
+        { model: User, as: 'author', attributes: ['id', 'username', 'name', 'avatarUrl'] },
+        { 
+          model: Comment, 
+          as: 'comments',
+          include: [{ model: User, as: 'author', attributes: ['id', 'username', 'name', 'avatarUrl'] }]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Create a post
 router.post('/', auth, async (req, res) => {
   try {

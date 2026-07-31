@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
-import { Home, LogOut } from 'lucide-react';
+import { Home, LogOut, Users } from 'lucide-react';
 import './Navbar.css';
 
 function Navbar() {
@@ -24,6 +24,10 @@ function Navbar() {
           <Link to="/" className="nav-link">
             <Home size={20} />
             <span className="nav-text">Feed</span>
+          </Link>
+          <Link to="/discover" className="nav-link">
+            <Users size={20} />
+            <span className="nav-text">Discover</span>
           </Link>
           {currentUser && (
             <>

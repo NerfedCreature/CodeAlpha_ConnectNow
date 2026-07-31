@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../api';
 import './ProfileHeader.css';
 
-function ProfileHeader({ profileUser, currentUser }) {
+function ProfileHeader({ profileUser, currentUser, onTabChange }) {
   const isOwnProfile = currentUser?.id === profileUser.id;
   
   // Basic check if current user is in profileUser's followers
@@ -62,15 +62,15 @@ function ProfileHeader({ profileUser, currentUser }) {
       )}
       
       <div className="profile-stats">
-        <div className="stat">
+        <div className="stat" onClick={() => onTabChange && onTabChange('posts')} style={{cursor: 'pointer'}}>
           <span className="stat-value">{profileUser.posts?.length || 0}</span>
           <span className="stat-label">Posts</span>
         </div>
-        <div className="stat">
+        <div className="stat" onClick={() => onTabChange && onTabChange('followers')} style={{cursor: 'pointer'}}>
           <span className="stat-value">{followersCount}</span>
           <span className="stat-label">Followers</span>
         </div>
-        <div className="stat">
+        <div className="stat" onClick={() => onTabChange && onTabChange('following')} style={{cursor: 'pointer'}}>
           <span className="stat-value">{profileUser.following?.length || 0}</span>
           <span className="stat-label">Following</span>
         </div>

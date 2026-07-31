@@ -127,7 +127,10 @@ router.get('/:username', async (req, res) => {
 // Get all users (for suggestions)
 router.get('/', async (req, res) => {
   try {
-    const users = await User.findAll({ attributes: ['id', 'username', 'name', 'avatarUrl'] });
+    const users = await User.findAll({ 
+      attributes: ['id', 'username', 'name', 'avatarUrl'],
+      include: [{ model: User, as: 'followers', attributes: ['id'] }]
+    });
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
