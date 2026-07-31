@@ -1,0 +1,72 @@
+.postcard {
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.postcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.postcard-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.author-username {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.post-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.postcard-body {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.postcard-actions {
+  display: flex;
+  gap: 24px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+}
+
+.action-btn.liked {
+  color: #e53e3e;
+}
+
+.action-btn:hover {
+  color: var(--primary-color);
+}
+
+.action-btn.liked:hover {
+  color: #e53e3e;
+}
