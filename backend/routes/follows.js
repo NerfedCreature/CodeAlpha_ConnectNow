@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { Follower } = require('../models');
+const auth = require('../middleware/auth');
 
 // Follow a user
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
-    const { followerId, followingId } = req.body;
+    const { followingId } = req.body;
+    const followerId = req.user.id;
     if (followerId === followingId) {
       return res.status(400).json({ error: 'Cannot follow yourself' });
     }
@@ -25,9 +27,10 @@ router.post('/', async (req, res) => {
 });
 
 // Unfollow a user
-router.post('/unfollow', async (req, res) => {
+router.post('/unfollow', auth, async (req, res) => {
   try {
-    const { followerId, followingId } = req.body;
+    const { followingId } = req.body;
+    const followerId = req.user.id;
     await Follower.destroy({
       where: { followerId, followingId }
     });

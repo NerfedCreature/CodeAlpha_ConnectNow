@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     avatarUrl: {
       type: DataTypes.STRING,
       allowNull: true,

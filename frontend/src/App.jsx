@@ -1,8 +1,10 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import api from './api';
 
 export const UserContext = createContext();
@@ -12,23 +14,18 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // For demo, we just auto-login a default user if none exists
     const initUser = async () => {
-      try {
-        const storedUser = localStorage.getItem('connectnow_user');
-        if (storedUser) {
-          setCurrentUser(JSON.parse(storedUser));
-        } else {
-          // Register a default user for demonstration
-          const res = await api.post('/users/login', { username: 'johndoe', name: 'John Doe' });
+      const token = localStorage.getItem('connectnow_token');
+      if (token) {
+        try {
+          const res = await api.get('/users/me');
           setCurrentUser(res.data);
-          localStorage.setItem('connectnow_user', JSON.stringify(res.data));
+        } catch (err) {
+          console.error("Failed to authenticate token", err);
+          localStorage.removeItem('connectnow_token');
         }
-      } catch (err) {
-        console.error("Failed to init user", err);
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
     initUser();
   }, []);
@@ -41,8 +38,10 @@ function App() {
         <Navbar />
         <div className="app-container container">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/profile/:username" element={<Profile />} />
+            <Route path="/login" element={currentUser ? <Navigate to="/" /> : <Login />} />
+            <Route path="/register" element={currentUser ? <Navigate to="/" /> : <Register />} />
+            <Route path="/" element={currentUser ? <Home /> : <Navigate to="/login" />} />
+            <Route path="/profile/:username" element={currentUser ? <Profile /> : <Navigate to="/login" />} />
           </Routes>
         </div>
       </Router>

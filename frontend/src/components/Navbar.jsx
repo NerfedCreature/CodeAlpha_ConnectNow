@@ -1,11 +1,18 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
-import { Home, User as UserIcon } from 'lucide-react';
+import { Home, LogOut } from 'lucide-react';
 import './Navbar.css';
 
 function Navbar() {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('connectnow_token');
+    setCurrentUser(null);
+    navigate('/login');
+  };
 
   return (
     <nav className="navbar glass">
@@ -19,10 +26,15 @@ function Navbar() {
             <span className="nav-text">Feed</span>
           </Link>
           {currentUser && (
-            <Link to={`/profile/${currentUser.username}`} className="nav-link profile-link">
-              <img src={currentUser.avatarUrl} alt="Avatar" className="avatar nav-avatar" />
-              <span className="nav-text">{currentUser.name}</span>
-            </Link>
+            <>
+              <Link to={`/profile/${currentUser.username}`} className="nav-link profile-link">
+                <img src={currentUser.avatarUrl} alt="Avatar" className="avatar nav-avatar" />
+                <span className="nav-text">{currentUser.name}</span>
+              </Link>
+              <button className="btn-icon" onClick={handleLogout} title="Logout">
+                <LogOut size={20} />
+              </button>
+            </>
           )}
         </div>
       </div>

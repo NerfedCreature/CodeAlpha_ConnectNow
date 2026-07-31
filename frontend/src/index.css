@@ -168,3 +168,40 @@ ul {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(13, 139, 147, 0.2);
 }
+
+/* Auth Pages */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  border: 1px solid #f87171;
+}
+
+.password-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: -8px;
+  padding-left: 4px;
+}

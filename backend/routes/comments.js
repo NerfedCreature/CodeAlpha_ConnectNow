@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { Comment, User, Post } = require('../models');
+const auth = require('../middleware/auth');
 
 // Add a comment to a post
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
-    const { content, postId, authorId } = req.body;
+    const { content, postId } = req.body;
+    const authorId = req.user.id;
     const comment = await Comment.create({ content, postId, authorId });
     
     // Fetch with author to return complete object
