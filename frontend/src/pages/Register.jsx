@@ -5,7 +5,8 @@ import { UserContext } from '../App';
 
 function Register() {
   const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { setCurrentUser } = useContext(UserContext);
@@ -34,7 +35,8 @@ function Register() {
     }
 
     try {
-      const res = await api.post('/users/register', { username, name, password });
+      const fullName = `${firstName.trim()} ${lastName.trim()}`;
+      const res = await api.post('/users/register', { username, name: fullName, password });
       localStorage.setItem('connectnow_token', res.data.token);
       setCurrentUser(res.data.user);
       navigate('/');
@@ -49,14 +51,26 @@ function Register() {
         <h2 style={{ textAlign: 'center', marginBottom: '24px', color: 'var(--primary-dark)' }}>Join ConnectNow</h2>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleRegister} className="auth-form">
-          <input 
-            type="text" 
-            className="input-field" 
-            placeholder="Full Name" 
-            value={name} 
-            onChange={e => setName(e.target.value)}
-            required
-          />
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <input 
+              type="text" 
+              className="input-field" 
+              placeholder="First Name" 
+              value={firstName} 
+              onChange={e => setFirstName(e.target.value)}
+              required
+              style={{ flex: 1 }}
+            />
+            <input 
+              type="text" 
+              className="input-field" 
+              placeholder="Last Name" 
+              value={lastName} 
+              onChange={e => setLastName(e.target.value)}
+              required
+              style={{ flex: 1 }}
+            />
+          </div>
           <input 
             type="text" 
             className="input-field" 

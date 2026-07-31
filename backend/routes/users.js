@@ -45,7 +45,8 @@ router.post('/register', async (req, res) => {
     user = await User.create({
       username,
       name,
-      password: hashedPassword
+      password: hashedPassword,
+      avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8B93&color=fff`
     });
 
     // Generate JWT
