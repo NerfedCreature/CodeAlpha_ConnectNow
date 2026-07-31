@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -16,6 +16,27 @@ export const UserContext = createContext();
 export const SocketContext = createContext();
 
 const socket = io('http://localhost:5000');
+
+function TitleUpdater() {
+  const location = useLocation();
+  useEffect(() => {
+    const path = location.pathname;
+    let title = 'ConnectNow';
+    
+    if (path === '/') title = 'Home | ConnectNow';
+    else if (path.startsWith('/discover')) title = 'Discover | ConnectNow';
+    else if (path.startsWith('/messages')) title = 'Messages | ConnectNow';
+    else if (path.startsWith('/notifications')) title = 'Notifications | ConnectNow';
+    else if (path.startsWith('/profile')) title = 'Profile | ConnectNow';
+    else if (path.startsWith('/post')) title = 'Post | ConnectNow';
+    else if (path.startsWith('/login')) title = 'Login | ConnectNow';
+    else if (path.startsWith('/register')) title = 'Register | ConnectNow';
+
+    document.title = title;
+  }, [location]);
+  
+  return null;
+}
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -89,6 +110,7 @@ function App() {
     <UserContext.Provider value={{ currentUser, setCurrentUser, unreadCounts, setUnreadCounts }}>
       <SocketContext.Provider value={socket}>
         <Router>
+          <TitleUpdater />
           <Navbar />
           <div className="app-container container">
             <Routes>
